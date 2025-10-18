@@ -4,12 +4,12 @@
 #include "graph.h"
 #include "bellman.h"
 
-int main(int argc, char *argv[])
+int main()
 {
     // A = 0, B = 1, C = 2, D = 3, E = 4
     int V = 5; // número de vértices
     int E = 9; // número de arestas
-    int NUM_THREADS = 2; // número de threads
+    int NUM_THREADS = 4; // número de threads
 
     Graph *graph = (Graph *)malloc(sizeof(Graph));
     graph->V = V;
