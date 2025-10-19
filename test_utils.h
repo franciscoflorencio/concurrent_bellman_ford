@@ -21,13 +21,57 @@ Graph* generate_random_graph(int V, int E) {
     graph->V = V;
     graph->E = E;
     graph->edge = (Edge*)malloc(E * sizeof(Edge));
+    
+    srand(time(NULL));
+    
+    // no grafo completo temos uma divisao de trabalho igual entre as threads >> speedup maior
+    if (E == V*V) {
+        int k = 0;
+        for (int i = 0; i < V; i++) {
+            for (int j = 0; j < V; j++) {
+                graph->edge[k].src = i;
+                graph->edge[k].dest = j;
+                graph->edge[k].weight = (rand() % 21) - 10;
+                k++;
+            }
+        }
+    } 
+    else {
+        for (int i = 0; i < E; i++) {
+            graph->edge[i].src = rand() % V;
+            graph->edge[i].dest = rand() % V;
+            graph->edge[i].weight = (rand() % 21) - 10;
+        }
+    }
+    return graph;
+}
+
+Graph* generate_random_graph_without_negative_cicles(int V, int E) {
+    Graph* graph = (Graph*)malloc(sizeof(Graph));
+    graph->V = V;
+    graph->E = E;
+    graph->edge = (Edge*)malloc(E * sizeof(Edge));
 
     srand(time(NULL));
-    for (int i = 0; i < E; i++) {
-        graph->edge[i].src = rand() % V;
-        graph->edge[i].dest = rand() % V;
-        // peso de cada aresta entre -10 e 10 para ter alguns negativos
-        graph->edge[i].weight = (rand() % 21) - 10;
+    
+    if (E == V*V) {
+        int k = 0;
+        for (int i = 0; i < V; i++) {
+            for (int j = 0; j < V; j++) {
+                graph->edge[k].src = i;
+                graph->edge[k].dest = j;
+                graph->edge[k].weight = (rand() % 11);
+                k++;
+            }
+        }
+    }
+    else {    
+        for (int i = 0; i < E; i++) {
+            graph->edge[i].src = rand() % V;
+            graph->edge[i].dest = rand() % V;
+
+            graph->edge[i].weight = (rand() % 11);
+        }
     }
     return graph;
 }
