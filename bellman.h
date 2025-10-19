@@ -19,6 +19,9 @@ typedef struct
     Barrier *barrier;
 } t_args;
 
+// 
+void bellman_ford(Graph* graph, int src);
+
 // funções do Bellman-Ford paralelo
 void parallel_bellman_ford(Graph *graph, int src, int num_threads);
 
