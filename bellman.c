@@ -12,6 +12,50 @@ void relax(int u, int v, int weight, int *distances)
     }
 }
 
+void bellman_ford(Graph* graph, int src)
+{
+    int V = graph->V;
+    int E = graph->E;
+    int *distances = (int*) malloc(V * sizeof(int));
+
+    // 
+    for (int i = 0; i < V; i++)
+    {
+        distances[i] = INFINITY;
+    }
+    distances[src] = 0;
+
+    //
+    for (int i = 1; i <= V - 1; i++)
+    {
+        for (int j = 0; j < E; j++)
+        {
+            int u = graph->edge[j].src;
+            int v = graph->edge[j].dest;
+            int weight = graph->edge[j].weight;
+
+            relax(u, v, weight, distances);
+        }
+    }
+
+    //
+    for (int i = 0; i < E; i++)
+    {
+        int u = graph->edge[i].src;
+        int v = graph->edge[i].dest;
+        int weight = graph->edge[i].weight;
+
+        if (distances[u] != INFINITY && distances[u] + weight < distances[v])
+        {
+            // printf("Graph contains negative weight cycle\n");
+            free(distances);
+            return;
+        }
+    }
+
+    free(distances);
+}
+
 // nome auto-explicativo :)
 void *bellman_ford_thread(void *arg)
 {
@@ -95,25 +139,25 @@ void parallel_bellman_ford(Graph *graph, int src, int num_threads)
         int weight = graph->edge[i].weight;
         if (distances[u] != INFINITY && distances[u] + weight < distances[v])
         {
-            printf("Graph contains negative weight cycle\n");
+            // printf("Graph contains negative weight cycle\n");
             free(distances);
             return;
         }
     }
 
     //imprime o resultado
-    printf("Distancias do vértice fonte %d:\n", src);
-    for (int i = 0; i < V; i++)
-    {
-        if (distances[i] == INFINITY)
-        {
-            printf("%d -> %d: INFINITY\n", src, i);
-        }
-        else
-        {
-            printf("%d -> %d: %d\n", src, i, distances[i]);
-        }
-    }
+    // printf("Distancias do vértice fonte %d:\n", src);
+    // for (int i = 0; i < V; i++)
+    // {
+    //     if (distances[i] == INFINITY)
+    //     {
+    //         printf("%d -> %d: INFINITY\n", src, i);
+    //     }
+    //     else
+    //     {
+    //         printf("%d -> %d: %d\n", src, i, distances[i]);
+    //     }
+    // }
 
     free(distances);
 }

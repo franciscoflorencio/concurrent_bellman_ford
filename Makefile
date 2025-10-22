@@ -33,11 +33,11 @@ test: $(TARGET)
 # Alvo para testes de desempenho
 performance: $(PERF_TARGET)
 	@echo "Executando testes de desempenho..."
-	./$(PERF_TARGET) | tee performance_results.txt
+	./$(PERF_TARGET) | tee metrics/performance_results.txt
 
 check: test
 
 clean:
-	rm -f $(OBJS) $(PERF_OBJS) $(TARGET) $(PERF_TARGET) performance_results.txt
+	rm -f $(OBJS) $(PERF_OBJS) $(TARGET) $(PERF_TARGET) metrics/performance_results.txt
 
 .PHONY: all clean run run-args test performance check
