@@ -6,7 +6,11 @@
 
 // definição do infinity que será utilizado no algoritmo
 #include <limits.h>
-#define INFINITY INT_MAX
+
+#define INT_MAX_HALF (2147483647 / 2)
+#define INFINITY INT_MAX_HALF
+
+#define NEG_INF (-INT_MAX_HALF)
 
 // estrutura representante dos argumentos que serão passados para cada thread
 typedef struct
@@ -17,12 +21,13 @@ typedef struct
     int *distances;
     Graph *graph;
     Barrier *barrier;
+    int *parents;
 } t_args;
 
 // 
-void bellman_ford(Graph* graph, int src);
+void bellman_ford(Graph* graph, int src, int *dist, int *parent);
 
 // funções do Bellman-Ford paralelo
-void parallel_bellman_ford(Graph *graph, int src, int num_threads);
+void parallel_bellman_ford(Graph *graph, int src, int num_threads, int *dist, int *parent);
 
 #endif // BELLMAN_H

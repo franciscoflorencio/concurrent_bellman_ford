@@ -4,28 +4,29 @@
 
 #include "bellman.h"
 
-void relax(int u, int v, int weight, int *distances)
+void relax(int u, int v, int weight, int *distances, int *parents)
 {
     if (distances[u] != INFINITY && distances[u] + weight < distances[v])
     {
         distances[v] = distances[u] + weight;
+        parents[v] = u;
     }
 }
 
-void bellman_ford(Graph* graph, int src)
+void bellman_ford(Graph* graph, int src, int *dist, int *parent)
 {
     int V = graph->V;
     int E = graph->E;
-    int *distances = (int*) malloc(V * sizeof(int));
 
-    // 
+    // Incializa distancias e pais
     for (int i = 0; i < V; i++)
     {
-        distances[i] = INFINITY;
+        dist[i] = INFINITY;
+        parent[i] = -1;
     }
-    distances[src] = 0;
+    dist[src] = 0;
 
-    //
+    // loop principal do Bellman-Ford
     for (int i = 1; i <= V - 1; i++)
     {
         for (int j = 0; j < E; j++)
@@ -34,26 +35,22 @@ void bellman_ford(Graph* graph, int src)
             int v = graph->edge[j].dest;
             int weight = graph->edge[j].weight;
 
-            relax(u, v, weight, distances);
+            relax(u, v, weight, dist, parent);
         }
     }
 
-    //
+    // checa por ciclos negativos
     for (int i = 0; i < E; i++)
     {
         int u = graph->edge[i].src;
         int v = graph->edge[i].dest;
         int weight = graph->edge[i].weight;
 
-        if (distances[u] != INFINITY && distances[u] + weight < distances[v])
+        if (dist[u] != INFINITY && dist[u] + weight < dist[v])
         {
-            // printf("Graph contains negative weight cycle\n");
-            free(distances);
-            return;
+            dist[v] = NEG_INF; // Indica ciclo negativo
         }
     }
-
-    free(distances);
 }
 
 // nome auto-explicativo :)
@@ -76,7 +73,7 @@ void *bellman_ford_thread(void *arg)
             int v = graph->edge[j].dest;
             int weight = graph->edge[j].weight;
 
-            relax(u, v, weight, args->distances);
+            relax(u, v, weight, args->distances, args->parents);
         }
         // espera todas as threads terminarem essa iteração antes de prosseguir
         barrier_wait(args->barrier);
@@ -85,18 +82,20 @@ void *bellman_ford_thread(void *arg)
 }
 
 // aqui a mágica acontece, CORAÇÃO DO PROGRAMA
-void parallel_bellman_ford(Graph *graph, int src, int num_threads)
+void parallel_bellman_ford(Graph *graph, int src, int num_threads, int *dist, int *parent)
 {
     int V = graph->V;
     int E = graph->E;
-    int *distances = (int *)malloc(V * sizeof(int));
+    int *distances = dist;
 
-    // inicializa as distâncias
+    // inicializa as distâncias e pais
     for (int i = 0; i < V; i++)
     {
         distances[i] = INFINITY;
+        parent[i] = -1;
     }
     distances[src] = 0;
+    parent[src] = -1;
 
     // variáveis de "gerenciamento" das threads
     pthread_t threads[num_threads];
@@ -116,6 +115,7 @@ void parallel_bellman_ford(Graph *graph, int src, int num_threads)
                                                 ? (E - thread_args[i].start_edge) // última thread pega o resto
                                                 : edges_per_thread;
         thread_args[i].distances = distances;
+        thread_args[i].parents = parent;
         thread_args[i].graph = graph;
         thread_args[i].barrier = &barrier;
 
@@ -139,9 +139,7 @@ void parallel_bellman_ford(Graph *graph, int src, int num_threads)
         int weight = graph->edge[i].weight;
         if (distances[u] != INFINITY && distances[u] + weight < distances[v])
         {
-            // printf("Graph contains negative weight cycle\n");
-            free(distances);
-            return;
+            distances[v] = NEG_INF; // Indica ciclo negativo
         }
     }
 
@@ -159,5 +157,4 @@ void parallel_bellman_ford(Graph *graph, int src, int num_threads)
     //     }
     // }
 
-    free(distances);
 }

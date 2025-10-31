@@ -20,14 +20,17 @@ $(PERF_TARGET): $(PERF_OBJS)
 	$(CC) $(CFLAGS) -o $@ $(PERF_OBJS)
 
 run: $(TARGET)
+	@mkdir -p graphs # Ensure the graphs directory exists
 	./$(TARGET)
 
 run-args: $(TARGET)
+	@mkdir -p graphs # Ensure the graphs directory exists
 	./$(TARGET) $(ARGS)
 
 # Alvos de teste
 test: $(TARGET)
 	@echo "Executando teste básico..."
+	@mkdir -p graphs # Ensure the graphs directory exists
 	./$(TARGET)
 
 # Alvo para testes de desempenho
@@ -39,5 +42,8 @@ check: test
 
 clean:
 	rm -f $(OBJS) $(PERF_OBJS) $(TARGET) $(PERF_TARGET) metrics/performance_results.txt
+	rm -f *.dot
+	rm -f *.png
+	rm -rf graphs
 
 .PHONY: all clean run run-args test performance check

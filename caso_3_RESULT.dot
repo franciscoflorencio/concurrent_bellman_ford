@@ -1,0 +1,12 @@
+digraph G {
+ rankdir=LR;
+ 0 [label="0 (0)", style=filled, fillcolor=lightblue];
+ 1 [label="1 (-1073741823)", style=filled, fillcolor=red];
+ 2 [label="2 (-1073741823)", style=filled, fillcolor=red];
+ 3 [label="3 (-1073741823)", style=filled, fillcolor=red];
+ 0 -> 1 [label="1"];
+ 1 -> 2 [label="-1", color=blue, penwidth=2.0];
+ 2 -> 3 [label="-1", color=blue, penwidth=2.0];
+ 3 -> 1 [label="-1", color=blue, penwidth=2.0];
+ 0 -> 3 [label="4"];
+}
