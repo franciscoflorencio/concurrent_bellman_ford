@@ -284,7 +284,7 @@ int main()
     }*/
 
     int source_vertex = 0;
-    int NUM_THREADS = 2;
+    int NUM_THREADS = 4;
     srand(time(NULL));
 
     printf("\n=== CASOS DE TESTE ESPECIAIS ===\n");
@@ -302,7 +302,7 @@ int main()
 
     // CASO 2: Grafo com peso negativo mas sem ciclo negativo
     {
-        int V = 4;
+        int V = 5;
         int E = 7;
         Edge edges[] = {
             {0, 1, -1}, {0, 2, 4}, {1, 2, 3}, {1, 3, 2}, {1, 4, 2},

@@ -10,6 +10,7 @@ typedef struct
     pthread_cond_t cond;
     int count;
     int total_threads;
+    int cycle;
 } Barrier;
 
 // função para inicializar a barreira
