@@ -202,7 +202,7 @@ int main()
     // CASO 2: Grafo com pesos negativos e sem ciclo negativo
     {
         int V = 5;
-        int E = 8;
+        int E = 7;
         Edge edges[] = {
             {0, 1, -1}, {0, 2, 4}, {1, 2, 3}, {1, 3, 2}, {1, 4, 2},
             {3, 2, 5}, {3, 1, 1}, {4, 3, -2}

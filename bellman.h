@@ -22,6 +22,7 @@ typedef struct
     Graph *graph;
     Barrier *barrier;
     int *parents;
+    pthread_mutex_t *vertex_locks;
 } t_args;
 
 // 

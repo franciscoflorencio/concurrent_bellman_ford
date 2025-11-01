@@ -4,12 +4,22 @@
 
 #include "bellman.h"
 
-void relax(int u, int v, int weight, int *distances, int *parents)
+void relax(int u, int v, int weight, int *distances, int *parents, pthread_mutex_t *vertex_locks)
 {
+    if (vertex_locks != NULL)
+    {
+        pthread_mutex_lock(&vertex_locks[v]);
+    }
+
     if (distances[u] != INFINITY && distances[u] + weight < distances[v])
     {
         distances[v] = distances[u] + weight;
         parents[v] = u;
+    }
+    
+    if (vertex_locks != NULL)
+    {
+        pthread_mutex_unlock(&vertex_locks[v]);
     }
 }
 
@@ -35,7 +45,7 @@ void bellman_ford(Graph* graph, int src, int *dist, int *parent)
             int v = graph->edge[j].dest;
             int weight = graph->edge[j].weight;
 
-            relax(u, v, weight, dist, parent);
+            relax(u, v, weight, dist, parent, NULL);
         }
     }
 
@@ -73,7 +83,7 @@ void *bellman_ford_thread(void *arg)
             int v = graph->edge[j].dest;
             int weight = graph->edge[j].weight;
 
-            relax(u, v, weight, args->distances, args->parents);
+            relax(u, v, weight, args->distances, args->parents, args->vertex_locks);
         }
         // espera todas as threads terminarem essa iteração antes de prosseguir
         barrier_wait(args->barrier);
@@ -87,6 +97,23 @@ void parallel_bellman_ford(Graph *graph, int src, int num_threads, int *dist, in
     int V = graph->V;
     int E = graph->E;
     int *distances = dist;
+
+    // aloca locks para cada vértice
+    pthread_mutex_t *vertex_locks = (pthread_mutex_t *)malloc(V * sizeof(pthread_mutex_t));
+    if (vertex_locks == NULL)
+    {
+        fprintf(stderr, "Erro ao alocar memória para vertex_locks\n");
+        exit(EXIT_FAILURE);
+    }
+
+    for (int i = 0; i < V; i++)
+    {
+        if(pthread_mutex_init(&vertex_locks[i], NULL) != 0)
+        {
+            fprintf(stderr, "Erro ao inicializar mutex para vértice %d\n", i);
+            exit(EXIT_FAILURE);
+        }
+    }
 
     // inicializa as distâncias e pais
     for (int i = 0; i < V; i++)
@@ -117,6 +144,7 @@ void parallel_bellman_ford(Graph *graph, int src, int num_threads, int *dist, in
         thread_args[i].parents = parent;
         thread_args[i].graph = graph;
         thread_args[i].barrier = &barrier;
+        thread_args[i].vertex_locks = vertex_locks;
 
         pthread_create(&threads[i], NULL, bellman_ford_thread, (void*)&thread_args[i]);
     }
@@ -131,14 +159,26 @@ void parallel_bellman_ford(Graph *graph, int src, int num_threads, int *dist, in
     barrier_destroy(&barrier);
 
     // checa por ciclos negativos
+    // passo 1: identifica vértices afetados diretamente por ciclos negativos
+    int *queue = (int *)malloc(V * sizeof(int));
+    int front = 0, rear = 0;
+    int *in_queue = (int *)calloc(V, sizeof(int)); // para evitar duplicatas
+
     for (int i = 0; i < E; i++)
     {
         int u = graph->edge[i].src;
         int v = graph->edge[i].dest;
         int weight = graph->edge[i].weight;
-        if (distances[u] != INFINITY && distances[u] + weight < distances[v])
+
+        if (distances[u] != INFINITY && distances[u] != NEG_INF && 
+            distances[u] + weight < distances[v])
         {
-            distances[v] = NEG_INF; // Indica ciclo negativo
+            if (!in_queue[v])
+            {
+                queue[rear++] = v;
+                in_queue[v] = 1;
+                distances[v] = NEG_INF; // marca imediatamente
+            }
         }
     }
 }
