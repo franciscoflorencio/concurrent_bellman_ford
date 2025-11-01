@@ -122,8 +122,7 @@ void parallel_bellman_ford(Graph *graph, int src, int num_threads, int *dist, in
         parent[i] = -1;
     }
     distances[src] = 0;
-    parent[src] = -1;
-
+    
     // variáveis de "gerenciamento" das threads
     pthread_t threads[num_threads];
     t_args thread_args[num_threads];
@@ -182,48 +181,4 @@ void parallel_bellman_ford(Graph *graph, int src, int num_threads, int *dist, in
             }
         }
     }
-
-    // passo 2: propaga a marcação para todos os vértices alcançáveis
-    while (front < rear)
-    {
-        int u = queue[front++];
-        for (int i = 0; i < E; i++)
-        {
-            if (graph->edge[i].src == u)
-            {
-                int v = graph->edge[i].dest;
-                if (!in_queue[v])
-                {
-                    queue[rear++] = v;
-                    in_queue[v] = 1;
-                    distances[v] = NEG_INF;
-                }
-            }
-        }
-    }
-
-    free(queue);
-    free(in_queue);
-
-    for (int i = 0; i < V; i++)
-    {
-        pthread_mutex_destroy(&vertex_locks[i]);
-    }
-    free(vertex_locks);
-    
-
-    //imprime o resultado
-    // printf("Distancias do vértice fonte %d:\n", src);
-    // for (int i = 0; i < V; i++)
-    // {
-    //     if (distances[i] == INFINITY)
-    //     {
-    //         printf("%d -> %d: INFINITY\n", src, i);
-    //     }
-    //     else
-    //     {
-    //         printf("%d -> %d: %d\n", src, i, distances[i]);
-    //     }
-    // }
-
 }
