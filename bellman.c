@@ -181,4 +181,32 @@ void parallel_bellman_ford(Graph *graph, int src, int num_threads, int *dist, in
             }
         }
     }
+
+    // passo 2: propaga a marcação para todos os vértices alcançáveis
+    while (front < rear)
+    {
+        int u = queue[front++];
+        for (int i = 0; i < E; i++)
+        {
+            if (graph->edge[i].src == u)
+            {
+                int v = graph->edge[i].dest;
+                if (!in_queue[v])
+                {
+                    queue[rear++] = v;
+                    in_queue[v] = 1;
+                    distances[v] = NEG_INF;
+                }
+            }
+        }
+    }
+
+    free(queue);
+    free(in_queue);
+
+    for (int i = 0; i < V; i++)
+    {
+        pthread_mutex_destroy(&vertex_locks[i]);
+    }
+    free(vertex_locks);
 }
