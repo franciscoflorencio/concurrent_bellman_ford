@@ -4,8 +4,8 @@
 #include "bellman.h"
 
 // configuração dos casos de teste
-#define NUM_RUNS 30  // número de execuções para cada configuração (reduzido devido ao tamanho maior dos grafos)
-#define MAX_THREADS 17  // testando até 16 threads para melhor análise de escalabilidade
+#define NUM_RUNS 30  // número de execuções para cada configuração
+#define MAX_THREADS 32  // testando até 32 threads para melhor análise de escalabilidade
 
 typedef struct {
     int V;              // número de vértices
@@ -15,17 +15,16 @@ typedef struct {
 } TestCase;
 
 // casos de teste com diferentes tamanhos de grafo
-TestCase test_cases[] = {
-    {100, 100,        "Grafo pequeno com densidade baixa",      0.0},  // 100 vertices
-    {1000, 10000,     "Grafo médio com densidade média",      0.0},  // 1K vertices
-    {5000, 50000,     "Grafo grande com densidade média",     0.0},  // 5K vertices
-    {10000, 100000,   "Grafo muito grande com densidade média", 0.0}, // 10K vertices
+TestCase test_cases_sparse[] = {
+    {100, 1000,        "Grafo pequeno com densidade media",      0.0}, // mil arestas
+    {1000, 10000,     "Grafo médio com densidade média",      0.0}, // 10 mil arestas
+    {5000, 50000,     "Grafo grande com densidade média",     0.0}, // 50 mil arestas
+    {10000, 100000,   "Grafo muito grande com densidade média", 0.0}, // 100 mil arestas
 };
 TestCase test_cases_complete[] = {
-    {100, 100*100,        "Grafo pequeno completo",      0.0},  // 100 vertices
-    {500, 500*500,     "Grafo médio completo",      0.0},  // 1K vertices
-    {1000, 1000*1000,     "Grafo grande completo",     0.0},  // 5K vertices
-    // {10000, 10000*10000,   "Grafo muito grande completo", 0.0}, // 10K vertices
+    {100, 100*100,        "Grafo pequeno completo",      0.0}, // 100 mil de arestas
+    {500, 500*500,     "Grafo médio completo",      0.0}, // 500 mil arestas
+    {1000, 1000*1000,     "Grafo grande completo",     0.0}, // 1 milhao de arestas
 };
 
 int main() {
@@ -54,21 +53,23 @@ int main() {
         
         for (int num_threads = 1; num_threads <= MAX_THREADS; num_threads *= 2) {
             double total_time = 0;
+            int dist[tc->V];
+            int parent[tc->V];
             
             printf("\nExecutando com %d thread(s):\n", num_threads);
             
             for (int run = 0; run < NUM_RUNS; run++) {
                 double start_time = get_time_usec();
-                
+
                 if (num_threads == 1) {
-                    bellman_ford(graph, 0);
+                    bellman_ford(graph, 0, dist, parent);
                 }
                 else {
-                    parallel_bellman_ford(graph, 0, num_threads);
+                    parallel_bellman_ford(graph, 0, num_threads, dist, parent);
                 }
                 
                 double end_time = get_time_usec();
-                double run_time = (end_time - start_time) / 1000000.0; // converte para segundos
+                double run_time = (end_time - start_time) / 1000000.0;
                 total_time += run_time;
                 
                 // printf("  Execução %d: %.4f segundos\n", run + 1, run_time);

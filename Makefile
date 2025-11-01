@@ -42,6 +42,7 @@ check: test
 
 clean:
 	rm -f $(OBJS) $(PERF_OBJS) $(TARGET) $(PERF_TARGET) metrics/performance_results.txt
+	rm -f  correctness/*.dot
 	rm -f *.dot
 	rm -f *.png
 	rm -rf graphs

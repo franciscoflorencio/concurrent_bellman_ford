@@ -124,7 +124,7 @@ void executar_caso(int caso, const char* descricao, Edge edges[], int V, int E, 
     parallel_bellman_ford(graph, source_vertex, NUM_THREADS, dist, parent);
 
     char filename_res[100];
-    sprintf(filename_res, "caso_%d_RESULT.dot", caso);
+    sprintf(filename_res, "correctness/caso_%d_threads_%d.dot", caso, NUM_THREADS);
     print_result(graph, filename_res, dist, parent, source_vertex);
 
     free(graph->edge);
@@ -182,109 +182,8 @@ void generate_sparse_connected_edges(Edge *edges, int V, int *E, int with_negati
 
 int main()
 {
-    /*int source_vertex = 0;
-    int NUM_THREADS = 4;  // Aumentado para melhor paralelismo
-    srand(42);  // Para resultados consistentes
-
-    // Definição dos tamanhos dos grafos
-    const int SMALL_V = 8;
-    const int MEDIUM_V = 25;
-    const int LARGE_V = 75;
-
-    // Arrays para armazenar as arestas (tamanho máximo possível)
-    Edge edges[LARGE_V * LARGE_V];
-    int E;
-
-    printf("\n=== TESTES COM GRAFOS PEQUENOS (V=%d) ===\n", SMALL_V);
-    
-    // Grafo pequeno completo sem ciclo negativo
-    generate_complete_graph_edges(edges, SMALL_V, &E, 0);
-    executar_caso(1, "Grafo pequeno completo sem ciclo negativo", edges, SMALL_V, E, source_vertex, NUM_THREADS);
-
-    // Grafo pequeno incompleto sem ciclo negativo
-    generate_sparse_connected_edges(edges, SMALL_V, &E, 0);
-    executar_caso(2, "Grafo pequeno incompleto sem ciclo negativo", edges, SMALL_V, E, source_vertex, NUM_THREADS);
-
-    // Grafo pequeno completo com pesos negativos (sem ciclo)
-    generate_complete_graph_edges(edges, SMALL_V, &E, 1);
-    executar_caso(3, "Grafo pequeno completo com pesos negativos", edges, SMALL_V, E, source_vertex, NUM_THREADS);
-
-    // Grafo pequeno incompleto com pesos negativos (sem ciclo)
-    generate_sparse_connected_edges(edges, SMALL_V, &E, 1);
-    executar_caso(4, "Grafo pequeno incompleto com pesos negativos", edges, SMALL_V, E, source_vertex, NUM_THREADS);
-
-    printf("\n=== TESTES COM GRAFOS MÉDIOS (V=%d) ===\n", MEDIUM_V);
-    
-    // Grafo médio completo sem ciclo negativo
-    generate_complete_graph_edges(edges, MEDIUM_V, &E, 0);
-    executar_caso(5, "Grafo médio completo sem ciclo negativo", edges, MEDIUM_V, E, source_vertex, NUM_THREADS);
-
-    // Grafo médio incompleto sem ciclo negativo
-    generate_sparse_connected_edges(edges, MEDIUM_V, &E, 0);
-    executar_caso(6, "Grafo médio incompleto sem ciclo negativo", edges, MEDIUM_V, E, source_vertex, NUM_THREADS);
-
-    // Grafo médio completo com pesos negativos (sem ciclo)
-    generate_complete_graph_edges(edges, MEDIUM_V, &E, 1);
-    executar_caso(7, "Grafo médio completo com pesos negativos", edges, MEDIUM_V, E, source_vertex, NUM_THREADS);
-
-    // Grafo médio incompleto com pesos negativos (sem ciclo)
-    generate_sparse_connected_edges(edges, MEDIUM_V, &E, 1);
-    executar_caso(8, "Grafo médio incompleto com pesos negativos", edges, MEDIUM_V, E, source_vertex, NUM_THREADS);
-
-    printf("\n=== TESTES COM GRAFOS GRANDES (V=%d) ===\n", LARGE_V);
-    
-    // Grafo grande completo sem ciclo negativo
-    generate_complete_graph_edges(edges, LARGE_V, &E, 0);
-    executar_caso(9, "Grafo grande completo sem ciclo negativo", edges, LARGE_V, E, source_vertex, NUM_THREADS);
-
-    // Grafo grande incompleto sem ciclo negativo
-    generate_sparse_connected_edges(edges, LARGE_V, &E, 0);
-    executar_caso(10, "Grafo grande incompleto sem ciclo negativo", edges, LARGE_V, E, source_vertex, NUM_THREADS);
-
-    // Grafo grande completo com pesos negativos (sem ciclo)
-    generate_complete_graph_edges(edges, LARGE_V, &E, 1);
-    executar_caso(11, "Grafo grande completo com pesos negativos", edges, LARGE_V, E, source_vertex, NUM_THREADS);
-
-    // Grafo grande incompleto com pesos negativos (sem ciclo)
-    generate_sparse_connected_edges(edges, LARGE_V, &E, 1);
-    executar_caso(12, "Grafo grande incompleto com pesos negativos", edges, LARGE_V, E, source_vertex, NUM_THREADS);
-
-    // Casos especiais com ciclos negativos
-    {
-        // Grafo pequeno com ciclo negativo
-        int V = 4;
-        E = 5;
-        Edge special_edges[] = {
-            {0, 1, 1}, {1, 2, -1}, {2, 3, -1}, {3, 1, -1}, {0, 3, 4}
-        };
-        executar_caso(13, "Grafo pequeno com ciclo negativo", special_edges, V, E, source_vertex, NUM_THREADS);
-    }
-
-    {
-        // Grafo médio com ciclo negativo
-        int V = 6;
-        E = 8;
-        Edge special_edges[] = {
-            {0, 1, 2}, {1, 2, -3}, {2, 3, 4}, {3, 4, 2},
-            {4, 2, -6}, {1, 5, 3}, {5, 0, 1}, {2, 0, 2}
-        };
-        executar_caso(14, "Grafo médio com ciclo negativo", special_edges, V, E, source_vertex, NUM_THREADS);
-    }
-
-    {
-        // Grafo grande com ciclo negativo (mais complexo)
-        int V = 8;
-        E = 12;
-        Edge special_edges[] = {
-            {0, 1, 2}, {1, 2, 3}, {2, 3, -2}, {3, 4, 1},
-            {4, 5, -1}, {5, 6, 2}, {6, 7, 3}, {7, 4, -5},
-            {1, 7, 4}, {3, 0, 2}, {5, 2, 1}, {6, 3, -2}
-        };
-        executar_caso(15, "Grafo grande com ciclo negativo", special_edges, V, E, source_vertex, NUM_THREADS);
-    }*/
-
     int source_vertex = 0;
-    int NUM_THREADS = 2;
+    int NUM_THREADS = 1;
     srand(time(NULL));
 
     printf("\n=== CASOS DE TESTE ESPECIAIS ===\n");
@@ -297,18 +196,18 @@ int main()
             {0, 1, 4}, {0, 2, 2}, {1, 2, 3}, {1, 3, 2}, {1, 4, 3},
             {2, 1, 1}, {2, 3, 4}, {2, 4, 5}, {4, 3, 3}
         };
-        executar_caso(1, "Grafo Pequeno Sem Ciclo Negativo", edges, V, E, source_vertex, NUM_THREADS);
+        executar_caso(1, "Grafo sem ciclo negativo", edges, V, E, source_vertex, NUM_THREADS);
     }
 
-    // CASO 2: Grafo com peso negativo mas sem ciclo negativo
+    // CASO 2: Grafo com pesos negativos e sem ciclo negativo
     {
-        int V = 4;
-        int E = 7;
+        int V = 5;
+        int E = 8;
         Edge edges[] = {
             {0, 1, -1}, {0, 2, 4}, {1, 2, 3}, {1, 3, 2}, {1, 4, 2},
             {3, 2, 5}, {3, 1, 1}, {4, 3, -2}
         };
-        executar_caso(2, "Grafo com Peso Negativo (Sem Ciclo)", edges, V, E, source_vertex, NUM_THREADS);
+        executar_caso(2, "Grafo com pesos negativos e sem ciclo negativo", edges, V, E, source_vertex, NUM_THREADS);
     }
 
     // CASO 3: Grafo com ciclo negativo
@@ -318,7 +217,7 @@ int main()
         Edge edges[] = {
             {0, 1, 1}, {1, 2, -1}, {2, 3, -1}, {3, 1, -1}, {0, 3, 4}
         };
-        executar_caso(3, "Grafo com Ciclo Negativo", edges, V, E, source_vertex, NUM_THREADS);
+        executar_caso(3, "Grafo com ciclo negativo", edges, V, E, source_vertex, NUM_THREADS);
     }
 
     // CASO 4: Grafo desconexo
@@ -328,7 +227,68 @@ int main()
         Edge edges[] = {
             {0, 1, 2}, {1, 2, 3}, {3, 4, 1}, {4, 5, 2}
         };
-        executar_caso(4, "Grafo Desconexo", edges, V, E, source_vertex, NUM_THREADS);
+        executar_caso(4, "Grafo desconexo", edges, V, E, source_vertex, NUM_THREADS);
+    }
+
+    // CASO 5: Grafo pequeno completo e sem ciclo negativo
+    {
+        int V = 8;
+        int E = V * (V - 1);
+        Edge edges[] = {
+            {0,1,2}, {0,2,3}, {0,3,4}, {0,4,5}, {0,5,6}, {0,6,7}, {0,7,8},
+            {1,0,2}, {1,2,4}, {1,3,5}, {1,4,6}, {1,5,7}, {1,6,8}, {1,7,9},
+            {2,0,3}, {2,1,4}, {2,3,6}, {2,4,7}, {2,5,8}, {2,6,9}, {2,7,1},
+            {3,0,4}, {3,1,5}, {3,2,6}, {3,4,8}, {3,5,9}, {3,6,1}, {3,7,2},
+            {4,0,5}, {4,1,6}, {4,2,7}, {4,3,8}, {4,5,1}, {4,6,2}, {4,7,3},
+            {5,0,6}, {5,1,7}, {5,2,8}, {5,3,9}, {5,4,1}, {5,6,3}, {5,7,4},
+            {6,0,7}, {6,1,8}, {6,2,9}, {6,3,1}, {6,4,2}, {6,5,3}, {6,7,5},
+            {7,0,8}, {7,1,9}, {7,2,1}, {7,3,2}, {7,4,3}, {7,5,4}, {7,6,5}
+        };
+        executar_caso(5, "Grafo pequeno completo e sem ciclo negativo", edges, V, E, source_vertex, NUM_THREADS);
+    }
+
+    // CASO 6: Grafo pequeno imcompleto e sem ciclo negativo
+    {
+        int V = 8;
+        int E = 10;
+        Edge edges[] = {
+            {0, 1, 3}, {0, 2, 5}, {1, 3, 2}, {2, 4, 4}, {3, 5, 6},
+            {4, 6, 2}, {5, 7, 3}, {6, 0, 7}, {2, 5, 1}, {3, 6, 8}
+        };
+        executar_caso(6, "Grafo pequeno imcompleto e sem ciclo negativo", edges, V, E, source_vertex, NUM_THREADS);
+    }
+
+    // CASO 7: Grafo pequeno completo com pesos negativos e sem ciclo negativo
+    {
+        int V = 8;
+        int E = 56;
+        Edge edges[] = {
+            {0,1,-1}, {0,2,2}, {0,3,3}, {0,4,2}, {0,5,3}, {0,6,1}, {0,7,2},
+            {1,0,2}, {1,2,1}, {1,3,3}, {1,4,2}, {1,5,3}, {1,6,2}, {1,7,2},
+            {2,0,2}, {2,1,3}, {2,3,1}, {2,4,2}, {2,5,3}, {2,6,2}, {2,7,1},
+            {3,0,3}, {3,1,2}, {3,2,2}, {3,4,1}, {3,5,2}, {3,6,3}, {3,7,2},
+            {4,0,2}, {4,1,3}, {4,2,2}, {4,3,2}, {4,5,1}, {4,6,2}, {4,7,3},
+            {5,0,3}, {5,1,2}, {5,2,1}, {5,3,3}, {5,4,2}, {5,6,1}, {5,7,2},
+            {6,0,2}, {6,1,3}, {6,2,2}, {6,3,1}, {6,4,2}, {6,5,3}, {6,7,1},
+            {7,0,2}, {7,1,2}, {7,2,3}, {7,3,2}, {7,4,1}, {7,5,3}, {7,6,2}
+        };
+        executar_caso(7, "Grafo pequeno completo com pesos negativos e sem ciclo", edges, V, E, source_vertex, NUM_THREADS);
+    }
+
+    // CASO 8: Grafo pequeno imcompleto com pesos negativos e sem ciclo negativo
+    {
+        int V = 8;
+        int E = 10;
+        Edge edges[] = {
+            {0, 1, -1}, {0, 2, 2}, {0, 3, 3},
+            {1, 4, 2}, {1, 5, 3},
+            {2, 5, 1}, {2, 6, 2},
+            {3, 6, 3}, {3, 7, 2},
+            {4, 7, 3},
+            {5, 6, 2},
+            {6, 7, 1}
+        };
+        executar_caso(8, "Grafo pequeno imcompleto com pesos negativos e sem ciclo", edges, V, E, source_vertex, NUM_THREADS);
     }
 
     return 0;

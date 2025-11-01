@@ -95,8 +95,7 @@ void parallel_bellman_ford(Graph *graph, int src, int num_threads, int *dist, in
         parent[i] = -1;
     }
     distances[src] = 0;
-    parent[src] = -1;
-
+    
     // variáveis de "gerenciamento" das threads
     pthread_t threads[num_threads];
     t_args thread_args[num_threads];
@@ -142,19 +141,4 @@ void parallel_bellman_ford(Graph *graph, int src, int num_threads, int *dist, in
             distances[v] = NEG_INF; // Indica ciclo negativo
         }
     }
-
-    //imprime o resultado
-    // printf("Distancias do vértice fonte %d:\n", src);
-    // for (int i = 0; i < V; i++)
-    // {
-    //     if (distances[i] == INFINITY)
-    //     {
-    //         printf("%d -> %d: INFINITY\n", src, i);
-    //     }
-    //     else
-    //     {
-    //         printf("%d -> %d: %d\n", src, i, distances[i]);
-    //     }
-    // }
-
 }
