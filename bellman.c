@@ -63,34 +63,6 @@ void bellman_ford(Graph* graph, int src, int *dist, int *parent)
     }
 }
 
-// nome auto-explicativo :)
-void *bellman_ford_thread(void *arg)
-{
-    t_args *args = (t_args *)arg;
-    Graph *graph = args->graph;
-    int V = graph->V;
-
-    int start_edge = args->start_edge;
-    int end_edge = start_edge + args->num_edges_for_thread;
-
-    // loop principal do Bellman-Ford, executado em V-1 iterações
-    for (int i = 0; i < V - 1; i++)
-    {
-        // "relaxa" os vértices atribuídos a essa thread
-        for (int j = start_edge; j < end_edge; j++)
-        {
-            int u = graph->edge[j].src;
-            int v = graph->edge[j].dest;
-            int weight = graph->edge[j].weight;
-
-            relax(u, v, weight, args->distances, args->parents, args->vertex_locks);
-        }
-        // espera todas as threads terminarem essa iteração antes de prosseguir
-        barrier_wait(args->barrier);
-    }
-    pthread_exit(NULL);
-}
-
 typedef struct {
     int start_edge;
     int end_edge;
