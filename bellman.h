@@ -2,7 +2,6 @@
 #define BELLMAN_H
 
 #include "graph.h"
-#include "barrier.h"
 
 // definição do infinity que será utilizado no algoritmo
 #include <limits.h>

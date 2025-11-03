@@ -183,7 +183,7 @@ void generate_sparse_connected_edges(Edge *edges, int V, int *E, int with_negati
 int main()
 {
     int source_vertex = 0;
-    int NUM_THREADS = 1;
+    int NUM_THREADS = 2;
     srand(time(NULL));
 
     printf("\n=== CASOS DE TESTE ESPECIAIS ===\n");
