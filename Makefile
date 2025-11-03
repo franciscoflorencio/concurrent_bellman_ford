@@ -11,8 +11,8 @@ LDFLAGS = -pthread -lm
 TARGET = out
 PERF_TARGET = perf_test
 
-SRCS = main.c bellman.c barrier.c
-PERF_SRCS = performance_test.c bellman.c barrier.c
+SRCS = main.c bellman.c print.c generate.c
+PERF_SRCS = performance_test.c bellman.c print.c generate.c
 
 OBJS = $(SRCS:.c=.o)
 PERF_OBJS = $(PERF_SRCS:.c=.o)

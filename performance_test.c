@@ -1,11 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
 #include "test_utils.h"
-#include "bellman.h"
-
-// configuração dos casos de teste
-#define NUM_RUNS 30  // número de execuções para cada configuração
-#define MAX_THREADS 32  // testando até 32 threads para melhor análise de escalabilidade
 
 typedef struct {
     int V;              // número de vértices
