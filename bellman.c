@@ -1,7 +1,3 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <pthread.h>
-
 #include "bellman.h"
 
 void relax(int u, int v, int weight, int *distances, int *parents, pthread_mutex_t *vertex_locks)

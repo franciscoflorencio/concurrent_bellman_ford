@@ -5,6 +5,9 @@
 
 // definição do infinity que será utilizado no algoritmo
 #include <limits.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <pthread.h>
 
 #define INT_MAX_HALF (2147483647 / 2)
 #define INFINITY INT_MAX_HALF
