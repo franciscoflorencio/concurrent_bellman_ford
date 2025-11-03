@@ -28,7 +28,7 @@ void bellman_ford(Graph* graph, int src, int *dist, int *parent)
     int V = graph->V;
     int E = graph->E;
 
-    // Incializa distancias e pais
+    // Inicializa distâncias e pais
     for (int i = 0; i < V; i++)
     {
         dist[i] = INFINITY;
@@ -36,7 +36,7 @@ void bellman_ford(Graph* graph, int src, int *dist, int *parent)
     }
     dist[src] = 0;
 
-    // loop principal do Bellman-Ford
+    // Laço principal do Bellman-Ford
     for (int i = 1; i <= V - 1; i++)
     {
         for (int j = 0; j < E; j++)
@@ -49,7 +49,7 @@ void bellman_ford(Graph* graph, int src, int *dist, int *parent)
         }
     }
 
-    // checa por ciclos negativos
+    // Verifica por ciclos negativos
     for (int i = 0; i < E; i++)
     {
         int u = graph->edge[i].src;
@@ -58,22 +58,14 @@ void bellman_ford(Graph* graph, int src, int *dist, int *parent)
 
         if (dist[u] != INFINITY && dist[u] + weight < dist[v])
         {
-            dist[v] = NEG_INF; // Indica ciclo negativo
+            dist[v] = NEG_INF; // Indica a presença de um ciclo negativo
         }
     }
 }
 
-typedef struct {
-    int start_edge;
-    int end_edge;
-    const int *dist_old;  // read-only
-    int *dist_new;        // write-only (no race: each thread writes disjoint edges? NO — but we allow races, it's OK!)
-    Graph *graph;
-} thread_args_opt;
-
 void *relax_edges_thread(void *arg) {
-    thread_args_opt *t = (thread_args_opt *)arg;
-    // Traverse assigned edges
+    t_args *t = (t_args *)arg;
+    // Percorre as arestas atribuídas
     for (int i = t->start_edge; i < t->end_edge; i++) {
         int u = t->graph->edge[i].src;
         int v = t->graph->edge[i].dest;
@@ -81,10 +73,10 @@ void *relax_edges_thread(void *arg) {
 
         if (t->dist_old[u] != INFINITY) {
             int new_dist = t->dist_old[u] + w;
-            // Allow race on dist_new[v] — it's safe because:
-            // - We only care about the MINIMUM value
-            // - Even if two threads write, the final value will be <= correct min
-            // - Next iteration will fix it
+            // Permite condição de corrida em dist_new[v] — é seguro porque:
+            // - Só nos importamos com o valor MÍNIMO
+            // - Mesmo se duas threads escreverem, o valor final será <= mínimo correto
+            // - A próxima iteração irá corrigir isso
             if (new_dist < t->dist_new[v]) {
                 t->dist_new[v] = new_dist;
             }
@@ -98,25 +90,25 @@ void parallel_bellman_ford(Graph *graph, int src, int num_threads, int *dist, in
     int V = graph->V;
     int E = graph->E;
 
-    // Double buffering arrays
+    // Arrays para duplo buffer
     int *dist_old = (int*)malloc(V * sizeof(int));
     int *dist_new = (int*)malloc(V * sizeof(int));
 
-    // Initialize
+    // Inicialização
     for (int i = 0; i < V; i++) {
         dist_old[i] = INFINITY;
         parent[i] = -1;
     }
     dist_old[src] = 0;
 
-    // Main Bellman-Ford loop: V-1 iterations
+    // Laço principal do Bellman-Ford: V-1 iterações
     for (int iter = 0; iter < V - 1; iter++) {
-        // Initialize dist_new as copy of dist_old (so unchanged vertices stay same)
+        // Inicializa dist_new como cópia de dist_old (assim vértices não alterados permanecem iguais)
         memcpy(dist_new, dist_old, V * sizeof(int));
 
-        // Prepare thread args
+        // Prepara argumentos das threads
         pthread_t *threads = (pthread_t*)calloc(num_threads, sizeof(pthread_t));
-        thread_args_opt *targs = (thread_args_opt*)calloc(num_threads, sizeof(thread_args_opt));
+        t_args *targs = (t_args*)calloc(num_threads, sizeof(t_args));
 
         int edges_per_thread = E / num_threads;
         for (int t = 0; t < num_threads; t++) {
@@ -129,12 +121,12 @@ void parallel_bellman_ford(Graph *graph, int src, int num_threads, int *dist, in
             pthread_create(&threads[t], NULL, relax_edges_thread, &targs[t]);
         }
 
-        // Wait for all threads
+        // Aguarda todas as threads
         for (int t = 0; t < num_threads; t++) {
             pthread_join(threads[t], NULL);
         }
 
-        // Swap buffers
+        // Troca os buffers
         int *temp = dist_old;
         dist_old = dist_new;
         dist_new = temp;
@@ -143,15 +135,15 @@ void parallel_bellman_ford(Graph *graph, int src, int num_threads, int *dist, in
         free(targs);
     }
 
-    // Copy final distances
+    // Copia as distâncias finais
     memcpy(dist, dist_old, V * sizeof(int));
 
-    // === Negative cycle detection (sequential, but fast) ===
+    // === Detecção de ciclo negativo (sequencial, mas rápido) ===
     int *queue = (int *)malloc(V * sizeof(int));
     int front = 0, rear = 0;
     int *in_queue = (int *)calloc(V, sizeof(int));
 
-    // First pass: find nodes that can still be relaxed
+    // Primeira passagem: encontra nós que ainda podem ser relaxados
     for (int i = 0; i < E; i++) {
         int u = graph->edge[i].src;
         int v = graph->edge[i].dest;
@@ -165,7 +157,7 @@ void parallel_bellman_ford(Graph *graph, int src, int num_threads, int *dist, in
         }
     }
 
-    // BFS propagation
+    // Propagação BFS
     while (front < rear) {
         int u = queue[front++];
         for (int i = 0; i < E; i++) {

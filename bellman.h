@@ -13,16 +13,12 @@
 #define NEG_INF (-INT_MAX_HALF)
 
 // estrutura representante dos argumentos que serão passados para cada thread
-typedef struct
-{
-    int thread_id;
+typedef struct {
     int start_edge;
-    int num_edges_for_thread;
-    int *distances;
+    int end_edge;
+    const int *dist_old;  // somente leitura
+    int *dist_new;        // somente escrita (sem corrida: cada thread escreve em arestas disjuntas? NÃO — mas permitimos corridas, está OK!)
     Graph *graph;
-    Barrier *barrier;
-    int *parents;
-    pthread_mutex_t *vertex_locks;
 } t_args;
 
 // 
