@@ -6,6 +6,11 @@
 #include <time.h>
 #include <sys/time.h>
 #include "graph.h"
+#include "bellman.h"
+
+// configuração dos casos de teste
+#define NUM_RUNS 30  // número de execuções para cada configuração
+#define MAX_THREADS 32  // testando até 32 threads para melhor análise de escalabilidade
 
 // estrutura para armazenar métricas de desempenho
 typedef struct {
