@@ -4,6 +4,8 @@
 #include "graph.h"
 #include "bellman.h"
 #include "print.h"
+#include "generate.h"
+#include "test_utils.h"
 
 int main()
 {

@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
+#include <string.h>
 
 #define INT_MAX_HALF (2147483647 / 2)
 #define INFINITY INT_MAX_HALF
