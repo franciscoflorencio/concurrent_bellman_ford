@@ -1,0 +1,21 @@
+# Compiled binaries and objects
+*.o
+out
+perf_test
+
+# Generated output files
+graphs/*.png
+graphs/*.dot
+correctness/*.dot
+
+# OS specific files
+.DS_Store
+.directory
+*~
+
+# IDE specific files
+.vscode/
+.idea/
+
+# Core dumps
+core
