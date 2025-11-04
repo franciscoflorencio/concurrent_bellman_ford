@@ -74,7 +74,7 @@ int main()
         printar_caso(5, "Grafo pequeno completo e sem ciclo negativo", edges, V, E, source_vertex, NUM_THREADS);
     }
 
-    // CASO 6: Grafo pequeno imcompleto e sem ciclo negativo
+    // CASO 6: Grafo pequeno incompleto e sem ciclo negativo
     {
         int V = 8;
         int E = 10;
@@ -82,7 +82,7 @@ int main()
             {0, 1, 3}, {0, 2, 5}, {1, 3, 2}, {2, 4, 4}, {3, 5, 6},
             {4, 6, 2}, {5, 7, 3}, {6, 0, 7}, {2, 5, 1}, {3, 6, 8}
         };
-        printar_caso(6, "Grafo pequeno imcompleto e sem ciclo negativo", edges, V, E, source_vertex, NUM_THREADS);
+        printar_caso(6, "Grafo pequeno incompleto e sem ciclo negativo", edges, V, E, source_vertex, NUM_THREADS);
     }
 
     // CASO 7: Grafo pequeno completo com pesos negativos e sem ciclo negativo
@@ -102,7 +102,7 @@ int main()
         printar_caso(7, "Grafo pequeno completo com pesos negativos e sem ciclo", edges, V, E, source_vertex, NUM_THREADS);
     }
 
-    // CASO 8: Grafo pequeno imcompleto com pesos negativos e sem ciclo negativo
+    // CASO 8: Grafo pequeno incompleto com pesos negativos e sem ciclo negativo
     {
         int V = 8;
         int E = 10;
@@ -115,7 +115,7 @@ int main()
             {5, 6, 2},
             {6, 7, 1}
         };
-        printar_caso(8, "Grafo pequeno imcompleto com pesos negativos e sem ciclo", edges, V, E, source_vertex, NUM_THREADS);
+        printar_caso(8, "Grafo pequeno incompleto com pesos negativos e sem ciclo", edges, V, E, source_vertex, NUM_THREADS);
     }
 
     return 0;
