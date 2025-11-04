@@ -40,7 +40,32 @@ $(PERF_TARGET): $(PERF_OBJS)
 # Alvos de Execução
 # ==============================================================================
 
+convert_dots:
+	@echo "Converting .dot files to .png..."
+	@mkdir -p graphs
+	@echo "Processing files from correctness/"
+	@for file in correctness/*.dot; do \
+		if [ -f "$$file" ]; then \
+			echo "Converting $$file..."; \
+			basename=$$(basename "$$file" .dot); \
+			dot -Tpng "$$file" -o "graphs/$${basename}.png" || echo "Failed to convert $$file"; \
+		fi; \
+	done
+	@echo "Processing files from graphs/"
+	@for file in graphs/*.dot; do \
+		if [ -f "$$file" ]; then \
+			echo "Converting $$file..."; \
+			basename=$$(basename "$$file" .dot); \
+			dot -Tpng "$$file" -o "graphs/$${basename}.png" || echo "Failed to convert $$file"; \
+		fi; \
+	done
+
 run: $(TARGET)
+	@echo "Executando conversão de arquivos .dot..."
+	@$(MAKE) convert_dots
+	@echo "Executando $(TARGET)..."
+	@mkdir -p graphs # Garante que o diretório 'graphs' exista
+	@./$(TARGET)
 	@echo "Executando $(TARGET)..."
 	@mkdir -p graphs # Garante que o diretório 'graphs' exista
 	@./$(TARGET)
